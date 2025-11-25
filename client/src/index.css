@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: #1A1A2E;
+  color: #ffffff;
+  min-height: 100vh;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #16213E;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #FF6B35;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #E94560;
+}
+
+/* Bike gear animation */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.gear-spin {
+  animation: spin-slow 10s linear infinite;
+}
+
+.gear-spin-reverse {
+  animation: spin-slow 8s linear infinite reverse;
+}
+
+/* Gradient backgrounds */
+.gradient-hero {
+  background: linear-gradient(135deg, #1A1A2E 0%, #16213E 50%, #0F3460 100%);
+}
+
+.gradient-card {
+  background: linear-gradient(145deg, #16213E 0%, #1A1A2E 100%);
+}
+
+/* Button styles */
+.btn-primary {
+  @apply bg-bike-orange hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95;
+}
+
+.btn-secondary {
+  @apply bg-bike-gray hover:bg-bike-blue text-white font-semibold py-3 px-6 rounded-lg border border-bike-orange transition-all duration-200;
+}
+
+/* Card styles */
+.card {
+  @apply bg-bike-blue/50 backdrop-blur-sm rounded-xl border border-bike-gray/50 p-6;
+}
+
+/* Input styles */
+.input {
+  @apply w-full bg-bike-dark border border-bike-gray rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-bike-orange focus:ring-1 focus:ring-bike-orange transition-colors;
+}
+
+.label {
+  @apply block text-sm font-medium text-gray-300 mb-2;
+}
+
+/* Mobile touch optimizations */
+@media (max-width: 768px) {
+  .btn-primary, .btn-secondary {
+    @apply py-4 text-lg;
+  }
+
+  .input {
+    @apply py-4 text-lg;
+  }
+
+  /* Larger touch targets */
+  button, a, input, select, textarea {
+    min-height: 44px;
+  }
+}
+
+/* Loading spinner */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #16213E;
+  border-top-color: #FF6B35;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Signature pad */
+.signature-pad {
+  @apply bg-white rounded-lg border-2 border-dashed border-bike-gray cursor-crosshair touch-none;
+}
+
+/* Star rating */
+.star {
+  @apply w-8 h-8 cursor-pointer transition-colors;
+}
+
+.star.filled {
+  @apply text-yellow-400;
+}
+
+.star.empty {
+  @apply text-gray-600;
+}
