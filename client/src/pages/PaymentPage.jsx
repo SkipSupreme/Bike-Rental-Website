@@ -4,6 +4,8 @@ import { loadStripe } from '@stripe/stripe-js'
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { CreditCard, Lock, AlertCircle, Bike } from 'lucide-react'
 
+const API_URL = import.meta.env.VITE_API_URL || ''
+
 // Load Stripe
 let stripePromise = null
 
@@ -36,7 +38,7 @@ function PaymentForm({ rental, clientSecret }) {
 
       if (paymentIntent.status === 'succeeded') {
         // Confirm payment on server
-        await fetch('/api/payments/confirm', {
+        await fetch(`${API_URL}/api/payments/confirm`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -116,12 +118,12 @@ export default function PaymentPage() {
     const init = async () => {
       try {
         // Get Stripe config
-        const configRes = await fetch('/api/payments/config')
+        const configRes = await fetch(`${API_URL}/api/payments/config`)
         const configData = await configRes.json()
         stripePromise = loadStripe(configData.publishableKey)
 
         // Get rental details
-        const rentalRes = await fetch(`/api/rentals/${rentalId}`, {
+        const rentalRes = await fetch(`${API_URL}/api/rentals/${rentalId}`, {
           credentials: 'include'
         })
         const rentalData = await rentalRes.json()
@@ -130,7 +132,7 @@ export default function PaymentPage() {
         setRental(rentalData.rental)
 
         // Create payment intent
-        const intentRes = await fetch('/api/payments/create-intent', {
+        const intentRes = await fetch(`${API_URL}/api/payments/create-intent`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',

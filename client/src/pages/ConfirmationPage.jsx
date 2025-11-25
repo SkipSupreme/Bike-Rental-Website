@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { CheckCircle, MapPin, Clock, Bike, AlertCircle, Star } from 'lucide-react'
 
+const API_URL = import.meta.env.VITE_API_URL || ''
+
 export default function ConfirmationPage() {
   const { rentalId } = useParams()
   const [rental, setRental] = useState(null)
@@ -9,7 +11,7 @@ export default function ConfirmationPage() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    fetch(`/api/rentals/${rentalId}`, { credentials: 'include' })
+    fetch(`${API_URL}/api/rentals/${rentalId}`, { credentials: 'include' })
       .then(res => res.json())
       .then(data => {
         if (data.error) throw new Error(data.error)

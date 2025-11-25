@@ -3,13 +3,15 @@ import { Link } from 'react-router-dom'
 import { Info } from 'lucide-react'
 import BikeIcon from '../components/icons/BikeIcon'
 
+const API_URL = import.meta.env.VITE_API_URL || ''
+
 export default function BikesPage() {
   const [bikes, setBikes] = useState({ grouped: {} })
   const [selectedType, setSelectedType] = useState('all')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/bikes')
+    fetch(`${API_URL}/api/bikes`)
       .then(res => res.json())
       .then(data => {
         setBikes(data)

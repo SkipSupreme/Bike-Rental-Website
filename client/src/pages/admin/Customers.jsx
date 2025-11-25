@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Search, User, Mail, Phone, FileText, DollarSign, X, Eye } from 'lucide-react'
 
+const API_URL = import.meta.env.VITE_API_URL || ''
+
 export default function AdminCustomers() {
   const [customers, setCustomers] = useState([])
   const [loading, setLoading] = useState(true)
@@ -16,7 +18,7 @@ export default function AdminCustomers() {
   const fetchCustomers = async () => {
     try {
       const params = search ? `?search=${encodeURIComponent(search)}` : ''
-      const res = await fetch(`/api/customers${params}`, { credentials: 'include' })
+      const res = await fetch(`${API_URL}/api/customers${params}`, { credentials: 'include' })
       const data = await res.json()
       setCustomers(data.customers || [])
     } catch (err) {
@@ -31,7 +33,7 @@ export default function AdminCustomers() {
     setLoadingDetails(true)
 
     try {
-      const res = await fetch(`/api/customers/${customerId}`, { credentials: 'include' })
+      const res = await fetch(`${API_URL}/api/customers/${customerId}`, { credentials: 'include' })
       const data = await res.json()
       setCustomerDetails(data)
     } catch (err) {
@@ -43,7 +45,7 @@ export default function AdminCustomers() {
 
   const viewSignature = async (customerId) => {
     try {
-      const res = await fetch(`/api/waiver/signature/${customerId}`, { credentials: 'include' })
+      const res = await fetch(`${API_URL}/api/waiver/signature/${customerId}`, { credentials: 'include' })
       const data = await res.json()
 
       if (data.signature) {

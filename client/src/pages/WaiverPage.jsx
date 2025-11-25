@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { FileText, Check, AlertCircle, Trash2 } from 'lucide-react'
 
+const API_URL = import.meta.env.VITE_API_URL || ''
+
 export default function WaiverPage() {
   const [waiver, setWaiver] = useState(null)
   const [agreed, setAgreed] = useState(false)
@@ -21,7 +23,7 @@ export default function WaiverPage() {
 
   useEffect(() => {
     // Fetch waiver content
-    fetch('/api/waiver')
+    fetch(`${API_URL}/api/waiver`)
       .then(res => res.json())
       .then(data => setWaiver(data.waiver))
       .catch(console.error)
@@ -122,7 +124,7 @@ export default function WaiverPage() {
     try {
       const signature = canvasRef.current.toDataURL('image/png')
 
-      const res = await fetch('/api/waiver/sign', {
+      const res = await fetch(`${API_URL}/api/waiver/sign`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

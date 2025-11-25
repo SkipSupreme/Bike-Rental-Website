@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { Plus, Edit2, Trash2, Check, X, AlertCircle } from 'lucide-react'
 import BikeIcon from '../../components/icons/BikeIcon'
 
+const API_URL = import.meta.env.VITE_API_URL || ''
+
 export default function AdminBikes() {
   const [bikes, setBikes] = useState([])
   const [loading, setLoading] = useState(true)
@@ -26,7 +28,7 @@ export default function AdminBikes() {
 
   const fetchBikes = async () => {
     try {
-      const res = await fetch('/api/bikes/admin/all', { credentials: 'include' })
+      const res = await fetch(`${API_URL}/api/bikes/admin/all`, { credentials: 'include' })
       const data = await res.json()
       setBikes(data.bikes || [])
     } catch (err) {
@@ -75,7 +77,7 @@ export default function AdminBikes() {
     }
 
     try {
-      const url = editingBike ? `/api/bikes/${editingBike}` : '/api/bikes'
+      const url = editingBike ? `${API_URL}/api/bikes/${editingBike}` : `${API_URL}/api/bikes`
       const method = editingBike ? 'PUT' : 'POST'
 
       const res = await fetch(url, {
@@ -101,7 +103,7 @@ export default function AdminBikes() {
     if (!confirm('Are you sure you want to delete this bike?')) return
 
     try {
-      const res = await fetch(`/api/bikes/${id}`, {
+      const res = await fetch(`${API_URL}/api/bikes/${id}`, {
         method: 'DELETE',
         credentials: 'include'
       })

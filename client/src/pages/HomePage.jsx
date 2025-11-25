@@ -4,17 +4,19 @@ import { MapPin, Clock, Phone, Star, ChevronRight, Shield, Bike } from 'lucide-r
 import GearIcon from '../components/icons/GearIcon'
 import BikeIcon from '../components/icons/BikeIcon'
 
+const API_URL = import.meta.env.VITE_API_URL || ''
+
 export default function HomePage() {
   const [content, setContent] = useState({})
   const [reviews, setReviews] = useState({ reviews: [], stats: { averageRating: 0, totalReviews: 0 } })
 
   useEffect(() => {
-    fetch('/api/content')
+    fetch(`${API_URL}/api/content`)
       .then(res => res.json())
       .then(data => setContent(data.content || {}))
       .catch(console.error)
 
-    fetch('/api/reviews')
+    fetch(`${API_URL}/api/reviews`)
       .then(res => res.json())
       .then(data => setReviews(data))
       .catch(console.error)

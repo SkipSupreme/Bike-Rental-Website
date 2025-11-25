@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Star, Send, AlertCircle, CheckCircle } from 'lucide-react'
 
+const API_URL = import.meta.env.VITE_API_URL || ''
+
 export default function ReviewPage() {
   const navigate = useNavigate()
 
@@ -17,7 +19,7 @@ export default function ReviewPage() {
   const [success, setSuccess] = useState(false)
 
   useEffect(() => {
-    fetch('/api/reviews/can-review', { credentials: 'include' })
+    fetch(`${API_URL}/api/reviews/can-review`, { credentials: 'include' })
       .then(res => res.json())
       .then(data => {
         setCanReview(data.canReview)
@@ -42,7 +44,7 @@ export default function ReviewPage() {
     setError('')
 
     try {
-      const res = await fetch('/api/reviews', {
+      const res = await fetch(`${API_URL}/api/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

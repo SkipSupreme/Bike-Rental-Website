@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Calendar, Clock, DollarSign, Plus, Minus, AlertCircle, X, Check } from 'lucide-react'
 
+const API_URL = import.meta.env.VITE_API_URL || ''
+
 export default function AdminRentals() {
   const [rentals, setRentals] = useState([])
   const [loading, setLoading] = useState(true)
@@ -28,7 +30,7 @@ export default function AdminRentals() {
       if (filter !== 'all') params.append('status', filter)
       if (dateFilter) params.append('date', dateFilter)
 
-      const res = await fetch(`/api/rentals/admin/all?${params}`, { credentials: 'include' })
+      const res = await fetch(`${API_URL}/api/rentals/admin/all?${params}`, { credentials: 'include' })
       const data = await res.json()
       setRentals(data.rentals || [])
     } catch (err) {
@@ -40,7 +42,7 @@ export default function AdminRentals() {
 
   const updateStatus = async (rentalId, status) => {
     try {
-      const res = await fetch(`/api/rentals/${rentalId}/status`, {
+      const res = await fetch(`${API_URL}/api/rentals/${rentalId}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -63,8 +65,8 @@ export default function AdminRentals() {
     setError('')
     try {
       const endpoint = chargeForm.type === 'charge'
-        ? `/api/rentals/${selectedRental.id}/charge`
-        : `/api/rentals/${selectedRental.id}/discount`
+        ? `${API_URL}/api/rentals/${selectedRental.id}/charge`
+        : `${API_URL}/api/rentals/${selectedRental.id}/discount`
 
       const res = await fetch(endpoint, {
         method: 'POST',

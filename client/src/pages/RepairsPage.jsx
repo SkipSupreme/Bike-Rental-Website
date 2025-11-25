@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react'
 import { Phone, Wrench, Clock, Star, MessageCircle } from 'lucide-react'
 import GearIcon from '../components/icons/GearIcon'
 
+const API_URL = import.meta.env.VITE_API_URL || ''
+
 export default function RepairsPage() {
   const [content, setContent] = useState({})
 
   useEffect(() => {
-    fetch('/api/content')
+    fetch(`${API_URL}/api/content`)
       .then(res => res.json())
       .then(data => setContent(data.content || {}))
       .catch(console.error)

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { DollarSign, Users, Calendar, Bike, Clock, ChevronRight } from 'lucide-react'
 
+const API_URL = import.meta.env.VITE_API_URL || ''
+
 export default function AdminDashboard() {
   const [data, setData] = useState({
     stats: { todayRentals: 0, activeRentals: 0, weekRevenue: 0, totalCustomers: 0 },
@@ -11,7 +13,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/admin/dashboard', { credentials: 'include' })
+    fetch(`${API_URL}/api/admin/dashboard`, { credentials: 'include' })
       .then(res => res.json())
       .then(setData)
       .catch(console.error)

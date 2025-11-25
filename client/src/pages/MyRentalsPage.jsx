@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Calendar, Clock, Bike, AlertCircle, ChevronRight } from 'lucide-react'
 
+const API_URL = import.meta.env.VITE_API_URL || ''
+
 export default function MyRentalsPage() {
   const [rentals, setRentals] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
 
   useEffect(() => {
-    fetch('/api/rentals/my-rentals', { credentials: 'include' })
+    fetch(`${API_URL}/api/rentals/my-rentals`, { credentials: 'include' })
       .then(res => res.json())
       .then(data => setRentals(data.rentals || []))
       .catch(console.error)

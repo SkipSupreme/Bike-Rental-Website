@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { FileText, Save, Image, Check, AlertCircle, X } from 'lucide-react'
 
+const API_URL = import.meta.env.VITE_API_URL || ''
+
 export default function AdminContent() {
   const [content, setContent] = useState({})
   const [loading, setLoading] = useState(true)
@@ -37,7 +39,7 @@ export default function AdminContent() {
 
   const fetchContent = async () => {
     try {
-      const res = await fetch('/api/content', { credentials: 'include' })
+      const res = await fetch(`${API_URL}/api/content`, { credentials: 'include' })
       const data = await res.json()
       setContent(data.content || {})
     } catch (err) {
@@ -53,7 +55,7 @@ export default function AdminContent() {
     setSuccess('')
 
     try {
-      const res = await fetch(`/api/content/${activeSection}`, {
+      const res = await fetch(`${API_URL}/api/content/${activeSection}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -81,7 +83,7 @@ export default function AdminContent() {
     formData.append('image', file)
 
     try {
-      const res = await fetch('/api/content/upload', {
+      const res = await fetch(`${API_URL}/api/content/upload`, {
         method: 'POST',
         credentials: 'include',
         body: formData

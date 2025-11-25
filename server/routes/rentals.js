@@ -71,6 +71,10 @@ router.post('/', requireAuth, (req, res) => {
       case 'full_day':
         baseAmount = bike.full_day_rate;
         break;
+      case 'all_day':
+        // All day is full day rate + 20% premium
+        baseAmount = Math.round(bike.full_day_rate * 1.2);
+        break;
       default:
         return res.status(400).json({ error: 'Invalid rental type' });
     }

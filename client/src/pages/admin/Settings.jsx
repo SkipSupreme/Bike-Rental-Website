@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Settings, Save, Check, AlertCircle, X, Star } from 'lucide-react'
 
+const API_URL = import.meta.env.VITE_API_URL || ''
+
 export default function AdminSettings() {
   const [settings, setSettings] = useState({})
   const [loading, setLoading] = useState(true)
@@ -18,7 +20,7 @@ export default function AdminSettings() {
 
   const fetchSettings = async () => {
     try {
-      const res = await fetch('/api/admin/settings', { credentials: 'include' })
+      const res = await fetch(`${API_URL}/api/admin/settings`, { credentials: 'include' })
       const data = await res.json()
       setSettings(data.settings || {})
     } catch (err) {
@@ -30,7 +32,7 @@ export default function AdminSettings() {
 
   const fetchPendingReviews = async () => {
     try {
-      const res = await fetch('/api/admin/reviews/pending', { credentials: 'include' })
+      const res = await fetch(`${API_URL}/api/admin/reviews/pending`, { credentials: 'include' })
       const data = await res.json()
       setPendingReviews(data.reviews || [])
     } catch (err) {
@@ -44,7 +46,7 @@ export default function AdminSettings() {
     setSuccess('')
 
     try {
-      const res = await fetch('/api/admin/settings', {
+      const res = await fetch(`${API_URL}/api/admin/settings`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -64,7 +66,7 @@ export default function AdminSettings() {
 
   const handleReviewAction = async (reviewId, approved) => {
     try {
-      const res = await fetch(`/api/admin/reviews/${reviewId}`, {
+      const res = await fetch(`${API_URL}/api/admin/reviews/${reviewId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

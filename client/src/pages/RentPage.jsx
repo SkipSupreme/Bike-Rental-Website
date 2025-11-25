@@ -4,6 +4,8 @@ import { useAuth } from '../contexts/AuthContext'
 import { Calendar, Clock, AlertCircle, Check } from 'lucide-react'
 import BikeIcon from '../components/icons/BikeIcon'
 
+const API_URL = import.meta.env.VITE_API_URL || ''
+
 export default function RentPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
@@ -21,6 +23,18 @@ export default function RentPage() {
   const [selectedBike, setSelectedBike] = useState(null)
   const [bikeType, setBikeType] = useState('all')
 
+  // Generate 30-minute time slots from 10:00 AM to 6:00 PM
+  const timeSlots = []
+  for (let hour = 10; hour <= 18; hour++) {
+    for (let min = 0; min < 60; min += 30) {
+      if (hour === 18 && min > 0) break // Stop at 6:00 PM
+      const h = hour.toString().padStart(2, '0')
+      const m = min.toString().padStart(2, '0')
+      const label = `${hour > 12 ? hour - 12 : hour}:${m} ${hour >= 12 ? 'PM' : 'AM'}`
+      timeSlots.push({ value: `${h}:${m}`, label })
+    }
+  }
+
   // Calculate end time based on rental type and duration
   const getEndTime = () => {
     if (!startDate || !startTime) return null
@@ -33,10 +47,22 @@ export default function RentPage() {
         return new Date(start.getTime() + 4 * 60 * 60 * 1000)
       case 'full_day':
         return new Date(start.getTime() + 8 * 60 * 60 * 1000)
+      case 'all_day':
+        // All day: 10 AM to 7 PM (9 hours)
+        const endTime = new Date(start)
+        endTime.setHours(19, 0, 0, 0)
+        return endTime
       default:
         return null
     }
   }
+
+  // Auto-set start time to 10:00 for all-day rentals
+  useEffect(() => {
+    if (rentalType === 'all_day' && startTime !== '10:00') {
+      setStartTime('10:00')
+    }
+  }, [rentalType])
 
   // Check availability when time changes
   useEffect(() => {
@@ -59,7 +85,7 @@ export default function RentPage() {
         type: bikeType
       })
 
-      const res = await fetch(`/api/bikes/available?${params}`)
+      const res = await fetch(`${API_URL}/api/bikes/available?${params}`)
       const data = await res.json()
       setBikes(data.bikes || [])
     } catch (err) {
@@ -99,7 +125,7 @@ export default function RentPage() {
     setError('')
 
     try {
-      const res = await fetch('/api/rentals', {
+      const res = await fetch(`${API_URL}/api/rentals`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -131,6 +157,9 @@ export default function RentPage() {
         return selectedBike.half_day_rate
       case 'full_day':
         return selectedBike.full_day_rate
+      case 'all_day':
+        // All day is full day rate + 20% premium
+        return Math.round(selectedBike.full_day_rate * 1.2)
       default:
         return 0
     }
@@ -194,26 +223,29 @@ export default function RentPage() {
                 </div>
                 <div>
                   <label className="label">Start Time</label>
-                  <input
-                    type="time"
+                  <select
                     value={startTime}
                     onChange={e => setStartTime(e.target.value)}
-                    min="10:00"
-                    max="18:00"
                     className="input"
                     required
-                  />
+                  >
+                    <option value="">Select time</option>
+                    {timeSlots.map(slot => (
+                      <option key={slot.value} value={slot.value}>{slot.label}</option>
+                    ))}
+                  </select>
                   <p className="text-xs text-gray-500 mt-1">Open 10 AM - 7 PM</p>
                 </div>
               </div>
 
               <div>
                 <label className="label">Rental Type</label>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {[
                     { value: 'hourly', label: 'Hourly' },
                     { value: 'half_day', label: 'Half Day (4h)' },
-                    { value: 'full_day', label: 'Full Day (8h)' }
+                    { value: 'full_day', label: 'Full Day (8h)' },
+                    { value: 'all_day', label: 'All Day (10-7)' }
                   ].map(option => (
                     <button
                       key={option.value}
@@ -326,7 +358,8 @@ export default function RentPage() {
                     <div className="text-right flex-shrink-0">
                       <p className="text-bike-orange font-semibold">
                         ${rentalType === 'hourly' ? bike.hourly_rate * duration :
-                          rentalType === 'half_day' ? bike.half_day_rate : bike.full_day_rate}
+                          rentalType === 'half_day' ? bike.half_day_rate :
+                          rentalType === 'all_day' ? Math.round(bike.full_day_rate * 1.2) : bike.full_day_rate}
                       </p>
                       <p className="text-xs text-gray-500">
                         {rentalType === 'hourly' ? `$${bike.hourly_rate}/hr` : ''}
@@ -377,7 +410,8 @@ export default function RentPage() {
                   <p className="text-gray-500">Duration</p>
                   <p className="font-medium">
                     {rentalType === 'hourly' ? `${duration} hour${duration > 1 ? 's' : ''}` :
-                     rentalType === 'half_day' ? '4 hours (half day)' : '8 hours (full day)'}
+                     rentalType === 'half_day' ? '4 hours (half day)' :
+                     rentalType === 'all_day' ? 'All Day (10 AM - 7 PM)' : '8 hours (full day)'}
                   </p>
                 </div>
                 <div>

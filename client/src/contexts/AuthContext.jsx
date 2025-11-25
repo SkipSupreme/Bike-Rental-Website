@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 
+const API_URL = import.meta.env.VITE_API_URL || ''
+
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
@@ -12,7 +14,7 @@ export function AuthProvider({ children }) {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me', { credentials: 'include' })
+      const res = await fetch(`${API_URL}/api/auth/me`, { credentials: 'include' })
       const data = await res.json()
       setUser(data.user)
     } catch (error) {
@@ -24,7 +26,7 @@ export function AuthProvider({ children }) {
   }
 
   const login = async (email, password) => {
-    const res = await fetch('/api/auth/login', {
+    const res = await fetch(`${API_URL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -37,7 +39,7 @@ export function AuthProvider({ children }) {
   }
 
   const register = async (userData) => {
-    const res = await fetch('/api/auth/register', {
+    const res = await fetch(`${API_URL}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -50,7 +52,7 @@ export function AuthProvider({ children }) {
   }
 
   const logout = async () => {
-    await fetch('/api/auth/logout', {
+    await fetch(`${API_URL}/api/auth/logout`, {
       method: 'POST',
       credentials: 'include'
     })
@@ -58,7 +60,7 @@ export function AuthProvider({ children }) {
   }
 
   const updateUser = async (updates) => {
-    const res = await fetch('/api/auth/profile', {
+    const res = await fetch(`${API_URL}/api/auth/profile`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
