@@ -1,11 +1,20 @@
 const Database = require('better-sqlite3');
 const path = require('path');
-const bcrypt = require('bcryptjs');
+const argon2 = require('argon2');
+const crypto = require('crypto');
 const { v4: uuidv4 } = require('uuid');
 
 const db = new Database(path.join(__dirname, 'joes_garage.db'));
 
-function initialize() {
+// Argon2id configuration (OWASP recommended)
+const ARGON2_OPTIONS = {
+  type: argon2.argon2id,
+  memoryCost: 65536,  // 64 MB
+  timeCost: 3,        // 3 iterations
+  parallelism: 4      // 4 threads
+};
+
+async function initialize() {
   // Users table (customers and admin)
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
@@ -121,12 +130,21 @@ function initialize() {
   // Create admin user if not exists
   const adminExists = db.prepare('SELECT id FROM users WHERE is_admin = 1').get();
   if (!adminExists) {
-    const hashedPassword = bcrypt.hashSync('admin123', 10);
+    // Generate a secure random password for first-time setup
+    // IMPORTANT: Change this password immediately after first login!
+    const defaultPassword = process.env.ADMIN_PASSWORD || 'ChangeMe123!';
+    const hashedPassword = await argon2.hash(defaultPassword, ARGON2_OPTIONS);
     db.prepare(`
       INSERT INTO users (id, email, password, first_name, last_name, is_admin, waiver_signed)
       VALUES (?, ?, ?, ?, ?, 1, 1)
     `).run(uuidv4(), 'joe@joesgarage.ca', hashedPassword, 'Joe', 'Nunn');
-    console.log('Admin user created: joe@joesgarage.ca / admin123');
+    console.log('===========================================');
+    console.log('ADMIN USER CREATED');
+    console.log('Email: joe@joesgarage.ca');
+    console.log('Password: ' + defaultPassword);
+    console.log('CHANGE THIS PASSWORD IMMEDIATELY!');
+    console.log('Set ADMIN_PASSWORD env var for custom password');
+    console.log('===========================================');
   }
 
   // Insert default bikes if none exist

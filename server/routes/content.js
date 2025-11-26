@@ -135,7 +135,23 @@ router.post('/upload', requireAdmin, upload.single('image'), (req, res) => {
 // Admin: Delete image
 router.delete('/upload/:filename', requireAdmin, (req, res) => {
   try {
-    const filePath = path.join(uploadsDir, req.params.filename);
+    // SECURITY: Sanitize filename to prevent path traversal attacks
+    const filename = path.basename(req.params.filename);
+
+    // Validate filename format (UUID + extension only)
+    const validFilename = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpeg|jpg|png|gif|webp)$/i;
+    if (!validFilename.test(filename)) {
+      return res.status(400).json({ error: 'Invalid filename' });
+    }
+
+    const filePath = path.join(uploadsDir, filename);
+
+    // Double-check the resolved path is within uploads directory
+    const resolvedPath = path.resolve(filePath);
+    if (!resolvedPath.startsWith(path.resolve(uploadsDir))) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
     }
